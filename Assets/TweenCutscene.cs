@@ -8,6 +8,8 @@ public class TweenCutscene : MonoBehaviour
 {
     private DigitalGlitch glitch;
     private void Start() => glitch = FindObjectOfType<DigitalGlitch>();
+    
+    //part of cutscene, called in fungus flowchart
     public void StartIntensityIncrease() => StartCoroutine(IntensityIncrease());
 
     private IEnumerator IntensityIncrease()
@@ -23,5 +25,12 @@ public class TweenCutscene : MonoBehaviour
         yield return new WaitForSeconds(1f);
 
         SceneManager.LoadScene("MainWorld");
+    }
+
+    private void Update()
+    {
+        //for quick skipping of intro
+        if(Input.GetKeyDown(KeyCode.Escape))
+            SceneManager.LoadScene("MainWorld");
     }
 }

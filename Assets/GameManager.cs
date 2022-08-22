@@ -8,8 +8,9 @@ using VivoxUnity;
 
 public class GameManager : MonoBehaviour
 {
-    [SerializeField] private GameObject MainCanvas;
     [SerializeField] private GameObject LoginCanvas;
+    [SerializeField] private GameObject Loading;
+
     [SerializeField] private TMP_InputField nameField;
     [SerializeField] private TMP_InputField ipAddressField;
     private VivoxLogin voiceChat;
@@ -34,7 +35,6 @@ public class GameManager : MonoBehaviour
         netManager.StartClient();
 
         LoginCanvas.SetActive(false);
-        MainCanvas.SetActive(true);
     }
 
     public void HostGame()
@@ -47,6 +47,11 @@ public class GameManager : MonoBehaviour
         netManager.StartHost();
 
         LoginCanvas.SetActive(false);
-        MainCanvas.SetActive(true);
+    }
+
+    //for visual purposes only, doesn't actually do any data sync
+    public void SyncDataUI()
+    {
+        Loading.SetActive(true);
     }
 }

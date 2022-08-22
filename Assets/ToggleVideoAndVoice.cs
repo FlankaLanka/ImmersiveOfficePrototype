@@ -5,6 +5,7 @@ using TMPro;
 
 public class ToggleVideoAndVoice : MonoBehaviour
 {
+    [HideInInspector] public VideoCamera playercam;
     [SerializeField] private TextMeshProUGUI voiceText;
     [SerializeField] private TextMeshProUGUI videoText;
     private VivoxLogin voiceChat;
@@ -31,12 +32,14 @@ public class ToggleVideoAndVoice : MonoBehaviour
 
     public void ToggleVideoOn()
     {
+        playercam.webCamOff = false;
         videoText.text = "Video Camera (ON)";
         videoText.color = Color.green;
     }
 
     public void ToggleVideoOff()
     {
+        playercam.webCamOff = true;
         videoText.text = "Video Camera (OFF)";
         videoText.color = Color.red;
     }
