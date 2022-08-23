@@ -54,8 +54,6 @@ public class VideoCamera : NetworkBehaviour
         {
             //converts webcam data from texture to bytes then sends to server
             Texture2D tex = new Texture2D(webCam.width, webCam.height, TextureFormat.RGB24, false);
-            Debug.Log(new Vector2(webCam.width, webCam.height));
-            Debug.Log(new Vector2(tex.width, tex.height));
             tex.SetPixels(webCam.GetPixels());
             tex.Apply();
             webCamData = tex.EncodeToJPG();

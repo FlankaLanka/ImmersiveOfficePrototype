@@ -6,14 +6,22 @@ using TMPro;
 
 public class GameUIManager : MonoBehaviour
 {
+    [Header("Settings UI")]
     [SerializeField] private GameObject mainCamera;
     [SerializeField] private GameObject mainUI;
     [SerializeField] private GameObject videoRoomUI;
     [SerializeField] private TextMeshProUGUI nameText;
     [SerializeField] private ModalWindowManager quitUI;
 
+    //used for not allowing player to toggle menu until loading in
+    [HideInInspector]
+    public bool playerLoadedIn = false;
+
     private void Update()
     {
+        if (!playerLoadedIn)
+            return;
+
         if (Input.GetKeyDown(KeyCode.Tab))
             HandleSettingsUI();
 
@@ -41,11 +49,6 @@ public class GameUIManager : MonoBehaviour
     {
         if(!mainUI.activeInHierarchy)
         {
-            //smooth transition into ui, then enable
-            //get player name first time settings is opened
-            if (nameText.text == "")
-                nameText.text = "Hello, " + PlayerPrefs.GetString("Name");
-
             StartCoroutine(EnableMainUI());
         }
         else
