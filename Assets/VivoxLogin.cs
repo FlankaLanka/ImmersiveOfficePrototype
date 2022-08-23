@@ -8,20 +8,15 @@ using UnityEngine.UI;
 
 public class VivoxLogin : MonoBehaviour
 {
-    Client client;
-    private Uri server = new Uri("https://mt1s.www.vivox.com/api2");
-    private string issuer = "franky2445-of38-dev";
-    private string domain = "mt1s.vivox.com";
-    private string tokenKey = "bonk662";
-    private TimeSpan timeSpan = TimeSpan.FromSeconds(90);
-    //private AsyncCallback loginCallback;
+    public Client client;
+    private readonly Uri server = new Uri("https://mt1s.www.vivox.com/api2");
+    private readonly string issuer = "franky2445-of38-dev";
+    private readonly string domain = "mt1s.vivox.com";
+    private readonly string tokenKey = "bonk662";
+    private readonly TimeSpan timeSpan = TimeSpan.FromSeconds(90);
 
     private ILoginSession loginSession;
     private IChannelSession channelSession;
-
-
-    public InputField tmp_Input_ChannelName;
-    public InputField tmp_Input_LoginName;
 
     private void Awake()
     {
@@ -31,15 +26,9 @@ public class VivoxLogin : MonoBehaviour
         DontDestroyOnLoad(this);
     }
 
-
     private void OnApplicationQuit()
     {
         client.Uninitialize();
-    }
-
-    private void Start()
-    {
-        //loginCallback = new AsyncCallback(LoginResult);
     }
 
     public void Login(string username)

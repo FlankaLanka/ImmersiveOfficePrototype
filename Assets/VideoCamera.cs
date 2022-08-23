@@ -2,25 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Mirror;
+using UnityEngine.TextCore;
 
 public class VideoCamera : NetworkBehaviour
 {
-    [SerializeField] private Texture2D chicken;
-    [SerializeField] private Renderer videoPlane;
+    [SerializeField] private Texture2D chicken; // muted image
+    public Renderer planeIn3D;// video plane
     static WebCamTexture webCam;
     public byte[] webCamData;
-    private int waited = 0; // NEED FIX BEFORE SUBMITTING
 
     public bool webCamOff = true;
+    private int transmissionCounter = 0;
+    private readonly int transmissionSpeed = 5; // simulates certain fps on camera 50/tranmissionSpeed;
 
     // Start is called before the first frame update
     void Start()
     {
         //instantiate video camera
         if (webCam == null)
-            webCam = new WebCamTexture();
+            webCam = new WebCamTexture(320, 180);
         if (isLocalPlayer)
             FindObjectOfType<ToggleVideoAndVoice>().playercam = this;
+
+        //start by initializing video to off
+        planeIn3D.material.mainTexture = chicken;
     }
 
     // Update is called once per frame
@@ -29,6 +34,7 @@ public class VideoCamera : NetworkBehaviour
         if (!isLocalPlayer)
             return;
 
+        //webcam off
         if (webCamOff)
         {
             if (webCam.isPlaying)
@@ -40,19 +46,23 @@ public class VideoCamera : NetworkBehaviour
             return;
         }
 
+        //webcam on
         if (!webCam.isPlaying)
             webCam.Play();
-        if (waited > 50) //simuating 1 frame per second for test
+
+        if(transmissionCounter < transmissionSpeed)
         {
             //converts webcam data from texture to bytes then sends to server
-            Texture2D tex = new Texture2D(webCam.width / 2, webCam.height / 2, TextureFormat.RGB24, false);
+            Texture2D tex = new Texture2D(webCam.width, webCam.height, TextureFormat.RGB24, false);
+            Debug.Log(new Vector2(webCam.width, webCam.height));
+            Debug.Log(new Vector2(tex.width, tex.height));
             tex.SetPixels(webCam.GetPixels());
             tex.Apply();
             webCamData = tex.EncodeToJPG();
             CmdUpdateVideoCam(webCamData);
-            waited = 0;
+            transmissionCounter = 0;
         }
-        waited++;
+        transmissionCounter++;
     }
 
     [Command]
@@ -67,9 +77,9 @@ public class VideoCamera : NetworkBehaviour
         if (videodata != null)
         {
             //loading the new texture in after converting it back from bytes
-            Texture2D newtex = new Texture2D(8,8);
+            Texture2D newtex = new(2,2);
             newtex.LoadImage(videodata);
-            videoPlane.material.mainTexture = newtex;
+            planeIn3D.material.mainTexture = newtex;
         }
     }
 
@@ -82,8 +92,6 @@ public class VideoCamera : NetworkBehaviour
     [ClientRpc]
     private void RpcUpdateToDefault()
     {
-        videoPlane.material.mainTexture = chicken;
+        planeIn3D.material.mainTexture = chicken;
     }
-
-
 }

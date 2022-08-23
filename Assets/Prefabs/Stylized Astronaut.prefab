@@ -307,8 +307,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  videoPlane: {fileID: 4095083622209686172}
+  chicken: {fileID: 2800000, guid: 4d302fa5668a16f47828655f49bf1f6f, type: 3}
+  planeIn3D: {fileID: 4095083622209686172}
   webCamData: 
+  webCamOff: 1
 --- !u!114 &7356554537817856528
 MonoBehaviour:
   m_ObjectHideFlags: 0

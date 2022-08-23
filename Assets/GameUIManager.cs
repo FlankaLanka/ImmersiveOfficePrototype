@@ -10,7 +10,7 @@ public class GameUIManager : MonoBehaviour
     [SerializeField] private GameObject mainUI;
     [SerializeField] private GameObject videoRoomUI;
     [SerializeField] private TextMeshProUGUI nameText;
-    [SerializeField] private GameObject quitUI;
+    [SerializeField] private ModalWindowManager quitUI;
 
     private void Update()
     {
@@ -58,7 +58,7 @@ public class GameUIManager : MonoBehaviour
     // only handles opening modal, the rest is done in Shift
     private void HandleQuitUI()
     {
-        if (!quitUI.activeInHierarchy)
+        if(!quitUI.gameObject.activeInHierarchy)
             quitUI.GetComponent<ModalWindowManager>().ModalWindowIn();
     }
 

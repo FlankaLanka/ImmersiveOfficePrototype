@@ -2,20 +2,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
-using Mirror;
-using Michsky.UI.Shift;
-using VivoxUnity;
+using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
     [SerializeField] private GameObject LoginCanvas;
     [SerializeField] private GameObject Loading;
+    [SerializeField] private GameObject videoVoicePanel;
 
     [SerializeField] private TMP_InputField nameField;
     [SerializeField] private TMP_InputField ipAddressField;
     private VivoxLogin voiceChat;
     private NetworkManagerOverride netManager;
-    // Start is called before the first frame update
 
     private void Start()
     {
@@ -49,9 +47,10 @@ public class GameManager : MonoBehaviour
         LoginCanvas.SetActive(false);
     }
 
-    //for visual purposes only, doesn't actually do any data sync
+    //doesn't actually do any data sync, just sets panels and visuals active
     public void SyncDataUI()
     {
         Loading.SetActive(true);
+        videoVoicePanel.SetActive(true);
     }
 }

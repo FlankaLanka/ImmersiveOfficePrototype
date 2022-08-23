@@ -18,4 +18,9 @@ public class NetworkManagerOverride : NetworkManager
         player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
         NetworkServer.AddPlayerForConnection(conn, player);
     }
+
+    private void OnConnectedToServer()
+    {
+        
+    }
 }
