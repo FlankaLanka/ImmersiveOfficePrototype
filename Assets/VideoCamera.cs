@@ -6,21 +6,36 @@ using UnityEngine.TextCore;
 
 public class VideoCamera : NetworkBehaviour
 {
-    [SerializeField] private Texture2D chicken; // muted image
-    public Renderer planeIn3D;// video plane
     static WebCamTexture webCam;
-    public byte[] webCamData;
+    private Texture2D textureRead;
+    private Texture2D textureWrite;
+    public Renderer planeIn3D; //video plane -> used by ReievePlayerCamData for 2D video call
+    [SerializeField] private byte[] webCamData;
+    [HideInInspector] public bool webCamOff = true; //For Toggle Camera On/Off
 
-    public bool webCamOff = true;
+    [Header("Resolution and FPS")]
+    public int setCamWidth = 160;
+    public int setCamHeight = 90;
+    // simulates certain fps on camera 50/tranmissionSpeed; => set to 5fps for demo purposes
     private int transmissionCounter = 0;
-    private readonly int transmissionSpeed = 5; // simulates certain fps on camera 50/tranmissionSpeed;
+    public int transmissionSpeed = 10;
+
+    [Header("Mute Camera Image")]
+    [SerializeField] private Texture2D chicken;
 
     // Start is called before the first frame update
     void Start()
     {
-        //instantiate video camera
+        //grabs the Settings Manager to change FPS and Resolution later on
+        FindObjectOfType<SettingsManager>().playerVideoController = this;
+
+        //instantiate video camera and write texture
         if (webCam == null)
+        {
             webCam = new WebCamTexture(320, 180);
+            textureWrite = new(2, 2);
+        }
+
         if (isLocalPlayer)
             FindObjectOfType<ToggleVideoAndVoice>().playercam = this;
 
@@ -37,9 +52,9 @@ public class VideoCamera : NetworkBehaviour
         //webcam off
         if (webCamOff)
         {
+            //stop webcam on first frame, set to chicken image
             if (webCam.isPlaying)
             {
-                //stop webcam on first frame, set to chicken image
                 webCam.Stop();
                 CmdSetToDefaultImage();
             }
@@ -50,14 +65,16 @@ public class VideoCamera : NetworkBehaviour
         if (!webCam.isPlaying)
             webCam.Play();
 
-        if(transmissionCounter < transmissionSpeed)
+        if(transmissionCounter >= transmissionSpeed) // simulating 5fps camera for demo
         {
-            //converts webcam data from texture to bytes then sends to server
-            Texture2D tex = new Texture2D(webCam.width, webCam.height, TextureFormat.RGB24, false);
-            tex.SetPixels(webCam.GetPixels());
-            tex.Apply();
-            webCamData = tex.EncodeToJPG();
+            //gets webcam data, resize to 160x90, send over network as bytes
+            textureRead = new Texture2D(webCam.width, webCam.height, TextureFormat.RGB24, false);
+            textureRead.SetPixels(webCam.GetPixels());
+            textureRead.Apply();
+            textureRead = ResizeTextureCarryImage(textureRead, setCamWidth, setCamHeight);
+            webCamData = textureRead.EncodeToJPG();
             CmdUpdateVideoCam(webCamData);
+
             transmissionCounter = 0;
         }
         transmissionCounter++;
@@ -75,9 +92,8 @@ public class VideoCamera : NetworkBehaviour
         if (videodata != null)
         {
             //loading the new texture in after converting it back from bytes
-            Texture2D newtex = new(2,2);
-            newtex.LoadImage(videodata);
-            planeIn3D.material.mainTexture = newtex;
+            textureWrite.LoadImage(videodata);
+            planeIn3D.material.mainTexture = textureWrite;
         }
     }
 
@@ -91,5 +107,17 @@ public class VideoCamera : NetworkBehaviour
     private void RpcUpdateToDefault()
     {
         planeIn3D.material.mainTexture = chicken;
+    }
+
+    //resize image to increase performance, used for demo purposes
+    private Texture2D ResizeTextureCarryImage(Texture2D texture2D, int targetX, int targetY)
+    {
+        RenderTexture rt = new RenderTexture(targetX, targetY, 24);
+        RenderTexture.active = rt;
+        Graphics.Blit(texture2D, rt);
+        Texture2D result = new Texture2D(targetX, targetY);
+        result.ReadPixels(new Rect(0, 0, targetX, targetY), 0, 0);
+        result.Apply();
+        return result;
     }
 }
