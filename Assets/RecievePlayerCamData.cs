@@ -8,31 +8,53 @@ public class RecievePlayerCamData : MonoBehaviour
     [SerializeField] private Texture chicken;
     [SerializeField] private RawImage playerFeed1;
     [SerializeField] private RawImage playerFeed2;
+
+    //used for connecting player 3d feed to 2d feed
     private VideoCamera[] playerVideos;
-    
+    private VideoCamera playerVideo1;
+    private VideoCamera playerVideo2;
+
     //used for not copying a muted webcam
-    private bool player1Set;
-    private bool player2Set;
 
     private void OnEnable()
     {
         playerVideos = FindObjectsOfType<VideoCamera>();
-        player1Set = false;
-        player2Set = false;
+
+        //this helps order the player videos to have the local player be on left, player 2 be on right
+        if(playerVideos[0].isLocalPlayer)
+        {
+            playerVideo1 = playerVideos[0];
+            if(playerVideos.Length >= 2)
+                playerVideo2 = playerVideos[1];
+        }
+        else
+        {
+            playerVideo1 = playerVideos[1];
+            playerVideo2 = playerVideos[0];
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
-        CopyImageFeed(playerFeed1, playerVideos[0], ref player1Set);
+        if(playerVideo1 != null)
+            CopyImageFeed(playerFeed1, playerVideo1);
+
         //if player 2 hasnt joined, just render player1 camera
-        if (playerVideos.Length >= 2)
-            CopyImageFeed(playerFeed2, playerVideos[1], ref player2Set);
+        if (playerVideo2 != null)
+            CopyImageFeed(playerFeed2, playerVideo2);
     }
 
-    private void CopyImageFeed(RawImage feed, VideoCamera playerVideo, ref bool playerSet)
+    private void OnDisable()
+    {
+        playerVideo1 = null;
+        playerVideo2 = null;
+    }
+
+    private void CopyImageFeed(RawImage feed, VideoCamera playerVideo)
     {
         /*
+        // this commented code is suppose to not allow the camera to copy the feed if player camera is muted
         //copy webcam feed, unless webcam off -> set to chicken
         if (playerVideo.webCamOff && playerSet)
             return;

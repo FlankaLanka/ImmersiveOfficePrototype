@@ -8,7 +8,7 @@ public class ToggleVideoAndVoice : MonoBehaviour
 {
     //Controls voice audio here. To find in game audio controller, check out settings manager
 
-    [HideInInspector] public VideoCamera playercam;
+    public VideoCamera playercam;
     [SerializeField] private TextMeshProUGUI voiceText;
     [SerializeField] private TextMeshProUGUI videoText;
 

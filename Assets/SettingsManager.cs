@@ -18,7 +18,7 @@ public class SettingsManager : MonoBehaviour
     [SerializeField] private TMP_InputField widthField;
     [SerializeField] private TMP_InputField heightField;
     [SerializeField] private TMP_InputField fpsField;
-    [HideInInspector] public VideoCamera playerVideoController;
+    public VideoCamera playerVideoController;
 
     private readonly int MAX_WIDTH = 640;
     private readonly int MAX_HEIGHT = 360;

@@ -23,21 +23,22 @@ public class VideoCamera : NetworkBehaviour
     [Header("Mute Camera Image")]
     [SerializeField] private Texture2D chicken;
 
+    //connecting to 2d call
+    public RecievePlayerCamData playerFeed2D;
+
     // Start is called before the first frame update
     void Start()
     {
-        //grabs the Settings Manager to change FPS and Resolution later on
-        FindObjectOfType<SettingsManager>().playerVideoController = this;
+        //connect to video tuning (FPS, Resolution) settings
+        if (isLocalPlayer)
+        {
+            FindObjectOfType<SettingsManager>().playerVideoController = this;
+            FindObjectOfType<ToggleVideoAndVoice>().playercam = this;
+        }
 
         //instantiate video camera and write texture
         if (webCam == null)
-        {
             webCam = new WebCamTexture(320, 180);
-            textureWrite = new(2, 2);
-        }
-
-        if (isLocalPlayer)
-            FindObjectOfType<ToggleVideoAndVoice>().playercam = this;
 
         //start by initializing video to off
         planeIn3D.material.mainTexture = chicken;
@@ -92,6 +93,7 @@ public class VideoCamera : NetworkBehaviour
         if (videodata != null)
         {
             //loading the new texture in after converting it back from bytes
+            textureWrite = new(2, 2);
             textureWrite.LoadImage(videodata);
             planeIn3D.material.mainTexture = textureWrite;
         }
